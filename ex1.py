@@ -8,54 +8,33 @@ io_pairs = [
     ((8, 9), 2304),
 ]
 
-'''
-Convenience functions for creating a constraint using a flag with identifier
-'i' that toggles whether the operator is used for operands x1 and x2.
-Use is OPTIONAL.
-'''
-def mul(i, x1, x2):
-    return If(Bool(f'B{i}'), (x1 * x2), 0)
-
-def shl(i, x1, x2):
-    return If(Bool(f'B{i}'), (x1 << x2), 0)
-
-'''
-One possible solution
-'''
 def formula(pairs):
-    initial_constraint = sum([If(Bool(f'B{i}'), 1, 0) for i in range(4)]) == 1
-    constraint = False
-    for i in range(4):
-        option_constraint = True
-        for (x, y), ans in io_pairs:
-            if i == 0:
-                pair_constraint = mul(0, x,y) == ans
-            if i == 1:
-                pair_constraint = mul(1, y,x) == ans
-            if i == 2:
-                pair_constraint = shl(2, x,y) == ans
-            if i == 3:
-                pair_constraint = shl(3, y,x) == ans
-            option_constraint = And(option_constraint, pair_constraint)
-        constraint = Or(constraint, option_constraint)
+    constraints = []
+    
+    # There are four possible operations:
+    #  1. f(x, y) = x * y
+    #  2. f(x, y) = y * x
+    #  3. f(x, y) = x << y
+    #  4. f(x, y) = y << x
+    
+    # Use Boolean flags B0, B1, B2, B3 to indicate which operation is used.
+    flags = [Bool(f'B{i}') for i in range(4)]
+    
+    # Constrain that exactly one of the flags is True.
+    exactly_one_flag = ... # TODO: Fill in here
+    constraints.append(exactly_one_flag)
+    
+    # For each input-output pair, create a constraint that the output matches one of the possible operations.
+    for (x, y), ans in pairs:
+        pair_constraint = ... # TODO: Fill in here
+        constraints.append(pair_constraint)
 
-    constraint = And(constraint, initial_constraint)
-    return constraint
+    return And(constraints)
 
-'''
-Another possible solution
-'''
-def formula1(pairs):
-    initial_constraint = sum([If(Bool(f'B{i}'), 1, 0) for i in range(4)]) == 1
-    constraint = True
-    for (x, y), ans in io_pairs:
-        pair_constraint = mul(0,x,y) + mul(1,y,x) + shl(2,x,y) + shl(3,y,x) == ans
-        constraint = And(constraint, pair_constraint)
-    constraint = And(constraint, initial_constraint)
-    return constraint
 
 if __name__ == '__main__':
     s = formula(io_pairs)
     print(f'Z3 formula: {s}')
     print('Z3 Solution:')
     solve(s)
+    

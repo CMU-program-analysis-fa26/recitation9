@@ -9,36 +9,28 @@ io_pairs = [
    ((8, 9, 1),4096)
 ]
 
-'''
-Convenience functions for creating a constraint using a flag with identifier
-'i' that toggles whether the operator is used for operands x1 and x2.
-Use is OPTIONAL.
-'''
-def mul(i, x1, x2):
-    return If(Bool(f'B{i}'), (x1 * x2), BitVecVal(0, 16))
-
-def shl(i, x1, x2):
-    return If(Bool(f'B{i}'), (x1 << x2), BitVecVal(0, 16))
-
-'''
-The main steps of the synthesis process are as follows:
-
-1. Define Z3 variables and expressions for the possible operations.
-2. Add a constraints to only allow one operation to be part of the solution per line.
-3. Add constraints for each input-output pair.
-4. Solve the Z3 formula to synthesize the function.
-'''
 def formula(pairs):
-
-    constraint = True
-    for inputs, output in io_pairs:
-         
-        # first op
-        intermediate_result = BitVec(f"interm_{count}", 16)
-     
-        # second op
-      
-    return constraint
+    constraints = []
+    
+    # The program looks like this:
+    #   z0 := input[0]
+    #   z1 := input[1]
+    #   z2 := input[2]
+    #   z3 := f3(z3_left, z3_right)
+    #   z4 := f4(z3, z4_right)
+    # where z3_left, z3_right, z4_right are either z0, z1, or z2
+    # and f3, f4 are either mul or shl operations
+    
+    # TODO: Implement the constraints.
+    
+    # The general strategy is:
+    # 1. Implement the structural constraints first (what is z3_left, z3_right, z4_right, f3, and f4).
+    #    Use Boolean flags such as z3_left_is_z0, z4_right_is_z1, f3_is_mul, etc.
+    # 2. For each input-output pair, create constraints that the output matches the computation 
+    #    defined by the structural constraints.
+    
+    
+    return And(constraints)
 
 if __name__ == '__main__':
     s = formula(io_pairs)
